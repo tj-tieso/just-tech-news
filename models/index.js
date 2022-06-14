@@ -1,4 +1,4 @@
-// File is responsible for right now is importing the User model and exporting an object with it as a property
+// File is responsible for importing the User model and exporting an object with it as a property
 
 const User = require("./User");
 

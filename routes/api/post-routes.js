@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { Post, User, Vote } = require("../../models");
+const { Post, User, Vote, Comment } = require("../../models");
 const sequelize = require("../../config/connection");
 
 // get all posts from all users
@@ -23,6 +23,15 @@ router.get("/", (req, res) => {
     ],
     order: [["created_at", "DESC"]],
     include: [
+      {
+        model: Comment,
+        attributes: ["id", "comment_text", "post_id", "user_id", "created_at"],
+        // include the User model so Comment can attach the username to the comment.
+        include: {
+          model: User,
+          attributes: ["username"],
+        },
+      },
       {
         model: User,
         attributes: ["username"],
@@ -56,6 +65,14 @@ router.get("/:id", (req, res) => {
     ],
     include: [
       {
+        model: Comment,
+        attributes: ["id", "comment_text", "post_id", "user_id", "created_at"],
+        include: {
+          model: User,
+          attributes: ["username"],
+        },
+      },
+      {
         model: User,
         attributes: ["username"],
       },
@@ -88,9 +105,8 @@ router.post("/", (req, res) => {
     });
 });
 
+// This PUT route must be defined before the /:id PUT route. Otherwise, Express.js thinks the word "upvote" is a valid parameter for /:id.
 // upvote
-// This PUT route must be defined before the /:id PUT route.
-// Otherwise, Express.js thinks the word "upvote" is a valid parameter for /:id.
 router.put("/upvote", (req, res) => {
   // custom static method created in models/Post.js
   Post.upvote(req.body, { Vote }).then((updatedPostData) =>

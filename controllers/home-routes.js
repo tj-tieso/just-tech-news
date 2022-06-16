@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { request } = require("express");
 const sequelize = require("../config/connection");
 const { Post, User, Comment } = require("../models");
 
@@ -38,7 +39,7 @@ router.get("/", (req, res) => {
       const posts = dbPostData.map((post) => post.get({ plain: true }));
 
       // take "posts" array and put into an object. Use HBS helpers (in homepage.handlebars) to display the results
-      res.render("homepage", { posts });
+      res.render("homepage", { posts, loggedIn: req.session.loggedIn });
     })
     .catch((err) => {
       console.log(err);
@@ -96,7 +97,10 @@ router.get("/post/:id", (req, res) => {
       // serialize the data
       const post = dbPostData.get({ plain: true });
       // pass data to template
-      res.render("single-post", { post });
+      res.render("single-post", {
+        post,
+        loggedIn: req.session.loggedIn,
+      });
     })
     .catch((err) => {
       console.log(err);

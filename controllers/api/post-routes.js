@@ -108,13 +108,17 @@ router.post("/", (req, res) => {
 // This PUT route must be defined before the /:id PUT route. Otherwise, Express.js thinks the word "upvote" is a valid parameter for /:id.
 // upvote
 router.put("/upvote", (req, res) => {
-  // custom static method created in models/Post.js
-  Post.upvote(req.body, { Vote }).then((updatedPostData) =>
-    res.json(updatedPostData).catch((err) => {
-      console.log(err);
-      res.status(400).json(err);
-    })
-  );
+  if (req.session) {
+    Post.upvote(
+      { ...req.body, user_id: req.session.user_id },
+      { Vote, Comment, User }
+    )
+      .then((updatedPostData) => res.json(updatedPostData))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+  }
 });
 
 // update a post title

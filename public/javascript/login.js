@@ -45,8 +45,8 @@ async function loginFormHandler(event) {
     });
 
     if (response.ok) {
-      // if successful, take user to home page
-      document.location.replace("/");
+      // if successful, take user to dashboard
+      document.location.replace("/dashboard");
     } else {
       alert(response.statusText);
     }
